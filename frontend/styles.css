@@ -23,7 +23,7 @@ body {
     color: var(--text-primary);
     line-height: 1.6;
     min-height: 100vh;
-    background-image: 
+    background-image:
         radial-gradient(circle at top right, rgba(35, 134, 54, 0.15) 0%, transparent 40%),
         radial-gradient(circle at bottom left, rgba(88, 166, 255, 0.1) 0%, transparent 40%);
 }
@@ -82,7 +82,7 @@ header p {
     grid-template-columns: 300px 1fr 300px;
     grid-template-rows: auto auto;
     gap: 1.5rem;
-    grid-template-areas: 
+    grid-template-areas:
         "controls viz metrics"
         "controls viz comp";
 }
@@ -104,10 +104,21 @@ header p {
     padding-bottom: 0.5rem;
 }
 
-.controls { grid-area: controls; }
-.visualization { grid-area: viz; }
-.metrics { grid-area: metrics; }
-.comparison { grid-area: comp; }
+.controls {
+    grid-area: controls;
+}
+
+.visualization {
+    grid-area: viz;
+}
+
+.metrics {
+    grid-area: metrics;
+}
+
+.comparison {
+    grid-area: comp;
+}
 
 .control-group {
     margin-bottom: 1.5rem;
@@ -168,6 +179,34 @@ input[type="range"]::-webkit-slider-runnable-track {
     border-radius: 2px;
 }
 
+.action-btn {
+    width: 100%;
+    margin-top: 1rem;
+    padding: 0.8rem;
+    background: linear-gradient(90deg, #238636, #2ea043);
+    color: white;
+    border: none;
+    border-radius: 6px;
+    font-weight: 600;
+    font-size: 1rem;
+    cursor: pointer;
+    transition: box-shadow 0.2s, transform 0.1s;
+    font-family: inherit;
+}
+
+.action-btn:hover {
+    box-shadow: 0 0 12px rgba(46, 160, 67, 0.4);
+}
+
+.action-btn:active {
+    transform: scale(0.98);
+}
+
+.action-btn:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+}
+
 .chart-container {
     position: relative;
     height: 350px;
@@ -225,7 +264,8 @@ table {
     font-size: 0.9rem;
 }
 
-th, td {
+th,
+td {
     padding: 0.8rem 0.5rem;
     text-align: left;
     border-bottom: 1px solid var(--border);
@@ -240,15 +280,23 @@ tr:last-child td {
     border-bottom: none;
 }
 
-.score-high { color: var(--accent); }
-.score-med { color: var(--warning); }
-.score-low { color: var(--danger); }
+.score-high {
+    color: var(--accent);
+}
+
+.score-med {
+    color: var(--warning);
+}
+
+.score-low {
+    color: var(--danger);
+}
 
 /* Responsive adjustments */
 @media (max-width: 1024px) {
     .grid-container {
         grid-template-columns: 1fr 1fr;
-        grid-template-areas: 
+        grid-template-areas:
             "controls controls"
             "viz viz"
             "metrics comp";
@@ -258,13 +306,13 @@ tr:last-child td {
 @media (max-width: 768px) {
     .grid-container {
         grid-template-columns: 1fr;
-        grid-template-areas: 
+        grid-template-areas:
             "controls"
             "viz"
             "metrics"
             "comp";
     }
-    
+
     header {
         flex-direction: column;
         align-items: flex-start;

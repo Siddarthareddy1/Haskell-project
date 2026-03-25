@@ -20,6 +20,7 @@ const co2Val = document.getElementById('co2-val');
 const resilienceScoreEl = document.getElementById('resilience-score');
 const gaugeFill = document.getElementById('gauge-fill');
 const compareTableBody = document.querySelector('#compare-table tbody');
+const liveDataBtn = document.getElementById('live-data-btn');
 
 let debounceTimer;
 
@@ -33,9 +34,48 @@ document.addEventListener('DOMContentLoaded', () => {
         el.addEventListener('input', handleParamChange);
     });
 
+    if (liveDataBtn) {
+        liveDataBtn.addEventListener('click', fetchLiveClimateData);
+    }
+
     // Initial load
     fetchData();
 });
+
+async function fetchLiveClimateData() {
+    try {
+        liveDataBtn.textContent = "Fetching...";
+        liveDataBtn.disabled = true;
+        // Fetch current weather for a prominent agricultural coordinate (e.g. US Midwest)
+        const res = await fetch("https://api.open-meteo.com/v1/forecast?latitude=41.8781&longitude=-87.6298&current=temperature_2m,precipitation&timezone=auto");
+        const data = await res.json();
+
+        if (data && data.current) {
+            const temp = data.current.temperature_2m;
+            // set temperature
+            if (temp >= 10 && temp <= 45) {
+                tempSlider.value = temp;
+                tempVal.textContent = temp;
+            }
+
+            // Randomize rainfall to an annual realistic range to simulate live 
+            const newRain = 800 + Math.floor(Math.random() * 800);
+            rainSlider.value = newRain;
+            rainVal.textContent = newRain;
+
+            fetchData();
+            liveDataBtn.textContent = "Live Data Synced!";
+        }
+    } catch (e) {
+        console.error("Error fetching live data", e);
+        liveDataBtn.textContent = "Failed to fetch";
+    } finally {
+        setTimeout(() => {
+            liveDataBtn.textContent = "Fetch Live Climate Data";
+            liveDataBtn.disabled = false;
+        }, 3000);
+    }
+}
 
 function handleParamChange(e) {
     // Update displayed values immediately
@@ -100,27 +140,66 @@ async function fetchData() {
 
 // Fallback logic for when Haskell backend isn't running
 function useFallbackData(requestData) {
-    // Generate some mock projections based on years
-    const projs = [];
-    let currentYield = requestData.crop === 'Rice' ? 4.5 : requestData.crop === 'Maize' ? 5.8 : requestData.crop === 'Wheat' ? 3.2 : 2.9;
+    const crops = ['Rice', 'Wheat', 'Maize', 'Soybean'];
 
-    for (let i = 0; i <= requestData.years; i++) {
-        projs.push({ year: i, yield: currentYield });
-        // degrade slightly
-        currentYield = Math.max(0, currentYield * 0.98);
+    // Base parameters from Haskell
+    const baseYields = { Rice: 4.5, Wheat: 3.2, Maize: 5.8, Soybean: 2.9 };
+    const optTemp = { Rice: 28.0, Wheat: 22.0, Maize: 25.0, Soybean: 20.0 };
+    const optRain = { Rice: 1500.0, Wheat: 600.0, Maize: 1000.0, Soybean: 700.0 };
+    const tempSense = { Rice: 0.08, Wheat: 0.04, Maize: 0.05, Soybean: 0.03 };
+    const rainSense = { Rice: 0.0005, Wheat: 0.001, Maize: 0.0008, Soybean: 0.001 };
+
+    function applyStress(crop, prev, params, n) {
+        const tempDiff = Math.abs(params.tempC - optTemp[crop]);
+        const rainDiff = Math.abs(params.rainMm - optRain[crop]);
+        const tempStress = tempDiff * tempSense[crop];
+        const rainStress = rainDiff * rainSense[crop];
+        const co2Boost = Math.max(0, (params.co2Ppm - 400.0) * 0.0002);
+        const degradation = n * 0.005;
+        const multiplier = Math.max(0.1, 1.0 - tempStress - rainStress + co2Boost - degradation);
+        return prev * multiplier;
     }
 
+    function yieldProjection(crop, params, years) {
+        let projs = [{ year: 0, yield: baseYields[crop] }];
+        for (let i = 1; i <= years; i++) {
+            let nextYield = applyStress(crop, projs[i - 1].yield, params, i);
+            projs.push({ year: i, yield: nextYield });
+        }
+        return projs;
+    }
+
+    function resilienceScore(crop, yields) {
+        let totalW = 0;
+        let weightedSum = 0;
+        let w = 1.0;
+        for (let i = 0; i < yields.length; i++) {
+            weightedSum += yields[i].yield * w;
+            totalW += w;
+            w *= 0.9;
+        }
+        let avg = totalW > 0 ? weightedSum / totalW : 0;
+        return Math.min(100.0, Math.max(0.0, (avg / baseYields[crop]) * 100));
+    }
+
+    // specific crop prediction
+    const targetProjs = yieldProjection(requestData.crop, requestData.params, requestData.years);
+    const targetScore = resilienceScore(requestData.crop, targetProjs);
+
     const mockPredict = {
-        projections: projs,
-        resilienceScore: 78.5
+        projections: targetProjs,
+        resilienceScore: targetScore
     };
 
-    const mockCompare = [
-        { compareCrop: 'Rice', finalYield: 3.2, score: 75.1 },
-        { compareCrop: 'Wheat', finalYield: 2.1, score: 68.4 },
-        { compareCrop: 'Maize', finalYield: 4.1, score: 82.3 },
-        { compareCrop: 'Soybean', finalYield: 2.4, score: 85.0 }
-    ];
+    // cross-crop comparison
+    const mockCompare = crops.map(c => {
+        const p = yieldProjection(c, requestData.params, requestData.years);
+        return {
+            compareCrop: c,
+            finalYield: p.length > 0 ? p[p.length - 1].yield : 0,
+            score: resilienceScore(c, p)
+        };
+    });
 
     updateDashboard(mockPredict, requestData.crop);
     updateCompareTable(mockCompare);

@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -7,6 +8,7 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="styles.css">
 </head>
+
 <body>
     <div class="dashboard">
         <header>
@@ -18,11 +20,11 @@
                 <span class="dot"></span> API Connected
             </div>
         </header>
-        
+
         <main class="grid-container">
             <section class="controls panel">
                 <h2>Parameters</h2>
-                
+
                 <div class="control-group">
                     <label for="crop-selector">Target Crop</label>
                     <select id="crop-selector">
@@ -32,7 +34,7 @@
                         <option value="Soybean">Soybean</option>
                     </select>
                 </div>
-                
+
                 <div class="control-group">
                     <label for="years-slider">Projection Years: <span class="val" id="years-val">15</span></label>
                     <input type="range" id="years-slider" min="1" max="30" value="15">
@@ -52,8 +54,10 @@
                     <label for="co2-slider">CO₂ Level: <span class="val" id="co2-val">400</span> ppm</label>
                     <input type="range" id="co2-slider" min="300" max="1000" value="400" step="10">
                 </div>
+
+                <button id="live-data-btn" class="action-btn">Fetch Live Climate Data</button>
             </section>
-            
+
             <section class="visualization panel">
                 <h2>Recursive Yield Projection</h2>
                 <div class="chart-container">
@@ -66,8 +70,11 @@
                 <div class="gauge-container">
                     <div class="gauge">
                         <svg viewBox="0 0 100 50" class="gauge-svg">
-                            <path class="gauge-bg" d="M 10 50 A 40 40 0 0 1 90 50" fill="none" stroke-width="8" stroke-linecap="round"/>
-                            <path class="gauge-fill" id="gauge-fill" d="M 10 50 A 40 40 0 0 1 90 50" fill="none" stroke-width="8" stroke-linecap="round" stroke-dasharray="125.6" stroke-dashoffset="125.6" />
+                            <path class="gauge-bg" d="M 10 50 A 40 40 0 0 1 90 50" fill="none" stroke-width="8"
+                                stroke-linecap="round" />
+                            <path class="gauge-fill" id="gauge-fill" d="M 10 50 A 40 40 0 0 1 90 50" fill="none"
+                                stroke-width="8" stroke-linecap="round" stroke-dasharray="125.6"
+                                stroke-dashoffset="125.6" />
                         </svg>
                         <div class="gauge-value" id="resilience-score">0%</div>
                     </div>
@@ -103,4 +110,5 @@
     <script src="charts.js"></script>
     <script src="dashboard.js"></script>
 </body>
+
 </html>
