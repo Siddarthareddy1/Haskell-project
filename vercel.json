@@ -1,0 +1,15 @@
+{
+  "version": 2,
+  "buildCommand": "echo 'Frontend built'",
+  "outputDirectory": "frontend",
+  "rewrites": [
+    {
+      "source": "/api/(.*)",
+      "destination": "/api/$1"
+    },
+    {
+      "source": "/(.*)",
+      "destination": "/$1"
+    }
+  ]
+}

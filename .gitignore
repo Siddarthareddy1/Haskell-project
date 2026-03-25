@@ -1,0 +1,5 @@
+dist-newstyle/
+.stack-work/
+node_modules/
+.DS_Store
+*.swp

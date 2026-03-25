@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Recursive Analytics for Sustainable Crop Yield Projections</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="dashboard">
+        <header>
+            <div class="title-container">
+                <h1>Recursive Crop Yield Analytics</h1>
+                <p>Assessing Climate Resilience in Staple Crops using Haskell</p>
+            </div>
+            <div class="status-indicator">
+                <span class="dot"></span> API Connected
+            </div>
+        </header>
+        
+        <main class="grid-container">
+            <section class="controls panel">
+                <h2>Parameters</h2>
+                
+                <div class="control-group">
+                    <label for="crop-selector">Target Crop</label>
+                    <select id="crop-selector">
+                        <option value="Rice">Rice</option>
+                        <option value="Wheat">Wheat</option>
+                        <option value="Maize">Maize</option>
+                        <option value="Soybean">Soybean</option>
+                    </select>
+                </div>
+                
+                <div class="control-group">
+                    <label for="years-slider">Projection Years: <span class="val" id="years-val">15</span></label>
+                    <input type="range" id="years-slider" min="1" max="30" value="15">
+                </div>
+
+                <div class="control-group">
+                    <label for="temp-slider">Temperature: <span class="val" id="temp-val">25</span> °C</label>
+                    <input type="range" id="temp-slider" min="10" max="45" value="25" step="0.5">
+                </div>
+
+                <div class="control-group">
+                    <label for="rain-slider">Rainfall: <span class="val" id="rain-val">1000</span> mm</label>
+                    <input type="range" id="rain-slider" min="100" max="3000" value="1000" step="10">
+                </div>
+
+                <div class="control-group">
+                    <label for="co2-slider">CO₂ Level: <span class="val" id="co2-val">400</span> ppm</label>
+                    <input type="range" id="co2-slider" min="300" max="1000" value="400" step="10">
+                </div>
+            </section>
+            
+            <section class="visualization panel">
+                <h2>Recursive Yield Projection</h2>
+                <div class="chart-container">
+                    <canvas id="yieldChart"></canvas>
+                </div>
+            </section>
+
+            <section class="metrics panel">
+                <h2>Climate Resilience</h2>
+                <div class="gauge-container">
+                    <div class="gauge">
+                        <svg viewBox="0 0 100 50" class="gauge-svg">
+                            <path class="gauge-bg" d="M 10 50 A 40 40 0 0 1 90 50" fill="none" stroke-width="8" stroke-linecap="round"/>
+                            <path class="gauge-fill" id="gauge-fill" d="M 10 50 A 40 40 0 0 1 90 50" fill="none" stroke-width="8" stroke-linecap="round" stroke-dasharray="125.6" stroke-dashoffset="125.6" />
+                        </svg>
+                        <div class="gauge-value" id="resilience-score">0%</div>
+                    </div>
+                </div>
+                <p class="metric-desc">Recursive weighted average</p>
+            </section>
+
+            <section class="comparison panel">
+                <h2>Cross-Crop Comparison</h2>
+                <div class="table-wrapper">
+                    <table id="compare-table">
+                        <thead>
+                            <tr>
+                                <th>Crop</th>
+                                <th>Final Yield</th>
+                                <th>Score</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <!-- Inserted dynamically -->
+                            <tr>
+                                <td colspan="3" style="text-align:center;">Loading comparison...</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </section>
+        </main>
+    </div>
+
+    <!-- Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="charts.js"></script>
+    <script src="dashboard.js"></script>
+</body>
+</html>
